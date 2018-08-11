@@ -64,6 +64,25 @@ int rm_push(rm_handle *rm, void *res, release_res free_res) {
   return 0;
 }
 
+// Replace res with new_res, preserving the encapsulating resource frame. NULL will be returned with errno set to EINVAL if any of the parameters are NULL. If the resource can't be found then NULL will be returned with errno set to ENOENT. It is the caller's responsibility to guarantee that res and new_res are of the same type, i.e. use the same deallocator. It is likewise the caller's responsibility to properly deallocate the returned resource.
+void *rm_replace(rm_handle *rm, void *res, void *new_res) {
+  if (!rm || !res || !new_res) {
+    errno = EINVAL;
+    return NULL;
+  }
+  if (rm->capacity && rm->size) {
+    for (size_t i = 0; i < rm->size; ++i) {
+      if (rm->frames[i]->res == res) {
+        void *ret = rm->frames[i]->res;
+        rm->frames[i]->res = new_res;
+        return ret;
+      }
+    }
+  }
+  errno = ENOENT;
+  return NULL;
+}
+
 // Destroys the specified resource manager. The stack of resource frames will be traversed. Each frame will be destroyed once its associated resource has been passed to its release_res function. The pointer to the resource manager will be set to NULL once it has been successfully destroyed. Note that referring to a managed pointer after it has been released by calling rm_free is undefined behavior. It is not an error to pass a NULL pointer to this function.
 void rm_free(rm_handle **rm) {
   if (rm && *rm) {

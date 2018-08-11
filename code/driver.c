@@ -33,6 +33,16 @@ int fn(void) {
   char *f = strdup("quuux");
   if (rm_push(rm, f, free) < 0) rm_ret_code(rm, -1);
 
+  char *z = rm_replace(rm, f, strdup("zee"));
+  if (z) {
+    printf("replaced %s\n", z);
+    free(z);
+    z = NULL;
+  } else {
+    perror("rm_replace");
+    rm_ret_code(rm, -1);
+  }
+
   rm_ret_code(rm, 0);
 }
 
