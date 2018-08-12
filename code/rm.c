@@ -71,7 +71,7 @@ void *rm_replace(resource_manager *rm, void *res, void *new_res) {
 }
 
 // Traverse the stack of resource frames, passing each tracked resource to its associated deallocation function. The resource manager will then be zeroed out. Note that referring to a managed pointer after it has been released by calling rm_free is undefined behavior.
-void rm_free(resource_manager *rm) {
+void rm_free_manager(resource_manager *rm) {
   if (rm) {
     if (rm->count && rm->frames) {
       for (ssize_t i = rm->count-1; i >= 0; --i) {

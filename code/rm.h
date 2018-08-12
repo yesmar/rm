@@ -19,6 +19,6 @@ typedef struct {
 int rm_push(resource_manager *rm, resource_frame *new_frame);
 int rm_pop(resource_manager *rm, void **res, release_res *res_free);
 void *rm_replace(resource_manager *rm, void *res, void *new_res);
-void rm_free(resource_manager *rm);
-#define rm_ret(rm) do { rm_free(rm); return; } while(0)
-#define rm_ret_code(rm, ret) do { rm_free(rm); return ret; } while(0)
+void rm_free_manager(resource_manager *rm);
+#define rm_ret(rm) do { rm_free_manager(rm); return; } while(0)
+#define rm_ret_code(rm, ret) do { rm_free_manager(rm); return ret; } while(0)
