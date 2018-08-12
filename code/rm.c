@@ -94,17 +94,13 @@ int rm_free(resource_manager *rm, void *res) {
 // Traverse the stack of resource frames, passing each tracked resource to its associated deallocation function. The resource manager will then be zeroed out. Note that referring to a managed pointer after it has been released by calling rm_free is undefined behavior.
 void rm_free_manager(resource_manager *rm) {
   if (rm) {
-    if (rm->count && rm->frames) {
-      for (ssize_t i = rm->count-1; i >= 0; --i) {
-        void *resp = NULL;
-        release_res freep = NULL;
-        if (rm_pop(rm, &resp, &freep) < 0) {
-          perror("rm_free");
-          return;
-        }
-        freep(resp);
-      }
-    }
+    int status = 0;
+    do {
+      void *resp = NULL;
+      release_res freep = NULL;
+      status = rm_pop(rm, &resp, &freep);
+      if (!status) freep(resp);
+    } while(!status);
     (void)memset(rm, 0, sizeof(resource_manager));
   }
 }

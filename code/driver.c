@@ -72,7 +72,7 @@ int fn(void) {
   }
   //printf("count %zu\n", rm.count);
   //for (size_t i = 0; i < rm.count; ++i) {
-  //  printf("%zu %p %s\n", i, rm.frames[i].res, rm.frames[i].res);
+  // printf("%zu %p %s\n", i, rm.frames[i].res, rm.frames[i].res);
   //}
    
   // Test resource frame stack overflow:
