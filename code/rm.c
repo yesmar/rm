@@ -54,7 +54,7 @@ int rm_pop(resource_manager *rm, void **res, release_res *res_free) {
 }
 
 // Replaces one resource with a new one, preserving the containing resource frame. If any of the parameters are NULL, NULL will be returned with errno set to EINVAL. Likewise, NULL will be returned with errno set to EINVAL if the old and new resources are the one in the same (i.e. same address). It is the caller's responsibility to guarantee that res and new_res are of the same type, i.e. make use of the same deallocator. It is likewise the caller's responsibility to properly deallocate the returned resource.
-void *rm_replace(resource_manager *rm, void *res, void *new_res) {
+void *rm_replace(resource_manager *rm, void *restrict res, void *restrict new_res) {
   if (!rm || !rm->frames || !res || !new_res || res == new_res) {
     errno = EINVAL;
     return NULL;
