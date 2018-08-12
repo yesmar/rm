@@ -2,7 +2,7 @@
 
 Copyright © 2018, Ramsey Dow. All rights reserved.
 
-Inspired by Alexey Kutepov's talk, [How I Manage Resources in Pure C -- Life Time](https://www.youtube.com/watch?v=ncRv9fCxt_w), I set out to build a C resource manager of my own. Unlike Alexey's implementation, which makes liberal use of the heap, my implementation is purely stack based. There will always be user-specified allocations and deallocations. That is, after all, what the resource manager is managing. However, from a framework perspective, there are no allocations or deallocations. Everything is managed on the call stack.
+Inspired by Alexey Kutepov's talk, [How I Manage Resources in Pure C -- Life Time](https://www.youtube.com/watch?v=ncRv9fCxt_w), I set out to build a C resource manager of my own. Unlike Alexey's implementation, which makes use of the heap, my implementation is purely stack based. There will always be user-specified allocations and deallocations. That is, after all, what the resource manager is managing. However, from a framework perspective, there are no allocations or deallocations. Everything is managed on the call stack.
 
 To build:
 
