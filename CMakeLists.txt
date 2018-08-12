@@ -1,4 +1,5 @@
 # Copyright © 2018, Ramsey Dow. All rights reserved.
+# SPDX short identifier: MIT
 cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
 project(rm LANGUAGES C)
 set(CMAKE_C_FLAGS "-g -Wall -Wextra -Werror")

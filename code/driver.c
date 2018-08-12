@@ -1,7 +1,8 @@
-// This is an independent project of an individual developer. Dear PVS-Studio, please check it.
+// This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
 // Copyright © 2018, Ramsey Dow. All rights reserved.
+// SPDX short identifier: MIT
 
 #include <stdlib.h>
 #include <string.h>
