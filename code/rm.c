@@ -70,7 +70,6 @@ void *rm_replace(resource_manager *rm, void *res, void *new_res) {
   }
   errno = ENOENT;
   return NULL;
-
 }
 
 // Traverse the stack of resource frames, passing each tracked resource to its associated deallocation function. The resource manager will then be zeroed out. Note that referring to a managed pointer after it has been released by calling rm_free is undefined behavior.
