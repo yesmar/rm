@@ -3,47 +3,83 @@
 
 // Copyright © 2018, Ramsey Dow. All rights reserved.
 
-#include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
+#include <stdio.h>
 #include "rm.h"
 
 int fn(void) {
-  rm_handle *rm = rm_alloc(0, 0);
-  if (!rm) {
-    perror("rm_alloc");
-    return -1;
-  }
-
+  resource_frame frames[6] = {{0}}; // Initialize the resource frame stack.
+  resource_manager rm = { .frames = frames, .capacity = 6, .count = 0 };
+  
   char *a = strdup("foo");
-  if (rm_push(rm, a, free) < 0) rm_ret_code(rm, -1);
-
-  char *b = strdup("bar");
-  if (rm_push(rm, b, free) < 0) rm_ret_code(rm, -1);
-
-  char *c = strdup("baz");
-  if (rm_push(rm, c, free) < 0) rm_ret_code(rm, -1);
-
-  char *d = strdup("qux");
-  if (rm_push(rm, d, free) < 0) rm_ret_code(rm, -1);
-
-  char *e = strdup("quux");
-  if (rm_push(rm, e, free) < 0) rm_ret_code(rm, -1);
-
-  char *f = strdup("quuux");
-  if (rm_push(rm, f, free) < 0) rm_ret_code(rm, -1);
-
-  char *z = rm_replace(rm, f, strdup("zee"));
-  if (z) {
-    printf("replaced %s\n", z);
-    free(z);
-    z = NULL;
-  } else {
-    perror("rm_replace");
-    rm_ret_code(rm, -1);
+  resource_frame frame_a = { .res = a, .res_free = free };
+  if (rm_push(&rm, &frame_a) < 0) {
+    perror("rm_push a");
+    rm_ret_code(&rm, -1);
   }
+  
+  char *b = strdup("bar");
+  resource_frame frame_b = { .res = b, .res_free = free };
+  if (rm_push(&rm, &frame_b) < 0) {
+    perror("rm_push b");
+    rm_ret_code(&rm, -1);
+  }
+  
+  char *c = strdup("baz");
+  resource_frame frame_c = { .res = c, .res_free = free };
+  if (rm_push(&rm, &frame_c) < 0) {
+    perror("rm_push c");
+    rm_ret_code(&rm, -1);
+  }
+  
+  char *d = strdup("qux");
+  resource_frame frame_d = { .res = d, .res_free = free };
+  if (rm_push(&rm, &frame_d) < 0) {
+    perror("rm_push d");
+    rm_ret_code(&rm, -1);
+  }
+  
+  char *e = strdup("quux");
+  resource_frame frame_e = { .res = e, .res_free = free };
+  if (rm_push(&rm, &frame_e) < 0) {
+    perror("rm_push e");
+    rm_ret_code(&rm, -1);
+  }
+  
+  // Test push of duplicate resource:
+  //if (rm_push(&rm, &frame_e) < 0) {
+  //  perror("rm_push e redux");
+  //  rm_ret_code(&rm, -1);
+  //}
+  
+  char *f = strdup("quuux");
+  resource_frame frame_f = { .res = f, .res_free = free };
+  if (rm_push(&rm, &frame_f) < 0) {
+    perror("rm_push f");
+    rm_ret_code(&rm, -1);
+  }
+   
+  // Test resource frame stack overflow:
+  //char *g = strdup("quuuux");
+  //resource_frame frame_g = { .res =g, .res_free = free };
+  //if (rm_push(&rm, &frame_g) < 0) {
+  //  perror("rm_push g");
+  //  rm_ret_code(&rm, -1);
+  //}
+  
+  // Test resource replacement:
+  //char *z = rm_replace(&rm, f, strdup("zee"));
+  //if (z) {
+  //  printf("replaced %s\n", z);
+  //  free(z);
+  //  z = NULL;
+  //} else {
+  //  perror("rm_replace");
+  //  rm_ret_code(&rm, -1);
+  //}
 
-  rm_ret_code(rm, 0);
+  rm_ret_code(&rm, 0);
 }
 
 int main(int __unused ac, char ** __unused av) {
