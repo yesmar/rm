@@ -29,7 +29,6 @@ int rm_push(resource_manager *rm, resource_frame *frame) {
   size_t idx = rm->count;
   rm->frames[idx].res = frame->res;
   rm->frames[idx].res_free = frame->res_free;
-  printf("+ %p\n", rm->frames[idx].res);
   if (rm->count+1 <= rm->capacity) {
     ++rm->count;
   }
@@ -49,7 +48,6 @@ int rm_pop(resource_manager *rm, void **res, release_res *res_free) {
   size_t idx = rm->count-1;
   *res = rm->frames[idx].res;
   *res_free = rm->frames[idx].res_free;
-  printf("- %p\n", rm->frames[idx].res);
   (void)memset(&rm->frames[idx], 0, sizeof(resource_frame));
   rm->count--;
   return 0;

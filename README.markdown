@@ -16,6 +16,8 @@ If you don't use [Ninja](https://ninja-build.org) (or simply prefer to use `make
 
 Note that the project is configured to compile against C11, since that is what I use day-to-day. However, the code is C99 compliant. If you wish to compile it against the C99 standard, just edit the `CMakeLists.txt` file in the root directory. Change the value of `C_STANDARD` from `11` to `99` and rebuild the project.
 
+Neither the framework nor the test driver emit output under normal circumstances. In fact, you should only see output if an error occurred. You can always `echo $?` to verify that things ran correctly (in which case you will see a `0`).
+
 Assuming you have [PVS-Studio](https://www.viva64.com/en/pvs-studio/) installed, you can perform static analysis thusly:
 
 ```bash
