@@ -70,6 +70,27 @@ void *rm_replace(resource_manager *rm, void *res, void *new_res) {
   return NULL;
 }
 
+// Remove the caller-specified resource with stack. -1 will be returned with errno set to EINVAL if any of the parameters are NULL. If the resource can't be found then -1 will be returned with errno set to ENOENT. If found, the resource will be free'd and then the remaining resource frames, if any, will be left shifted, and the frame count decremented.
+int rm_free(resource_manager *rm, void *res) {
+  if (!rm || !rm->frames || !res) {
+    errno = EINVAL;
+    return -1;
+  }
+  for (size_t i = 0; i < rm->count; ++i) {
+    if (rm->frames[i].res == res) {
+      rm->frames[i].res_free(rm->frames[i].res);
+      for (size_t j = i+1; j < rm->count; ++j) {
+        (void)memcpy(&rm->frames[j-1], &rm->frames[j], sizeof(resource_frame));
+      }
+      rm->count--;
+      (void)memset(&rm->frames[rm->count], 0, sizeof(resource_frame));
+      return 0;
+    }
+  }
+  errno = ENOENT;
+  return -1;
+}
+
 // Traverse the stack of resource frames, passing each tracked resource to its associated deallocation function. The resource manager will then be zeroed out. Note that referring to a managed pointer after it has been released by calling rm_free is undefined behavior.
 void rm_free_manager(resource_manager *rm) {
   if (rm) {

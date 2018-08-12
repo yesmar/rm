@@ -60,6 +60,20 @@ int fn(void) {
     perror("rm_push f");
     rm_ret_code(&rm, -1);
   }
+
+  // Test free'ing first resource frame:
+  //printf("count %zu\n", rm.count);
+  //for (size_t i = 0; i < rm.count; ++i) {
+  //  printf("%zu %p %s\n", i, rm.frames[i].res, rm.frames[i].res);
+  //}
+  if (rm_free(&rm, a) < 0) {
+   perror("rm_free");
+   rm_ret_code(&rm, -1);
+  }
+  //printf("count %zu\n", rm.count);
+  //for (size_t i = 0; i < rm.count; ++i) {
+  //  printf("%zu %p %s\n", i, rm.frames[i].res, rm.frames[i].res);
+  //}
    
   // Test resource frame stack overflow:
   //char *g = strdup("quuuux");
