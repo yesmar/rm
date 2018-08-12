@@ -10,7 +10,7 @@
 #include <string.h>
 #include "rm.h"
 
-// Push a new resource frame into the resource manager stack. If any of the parameters are NULL, -1 will be returned and errno set to EINVAL. Any attempt to add frames beyond the stack's capacity will result in -1 being returned with errno set to EFBIG. Because a catastrophic error will occur if any given resource is pushed a second time, the stack will be scanned to ensure the resource's address is not already tracked. If it is, -1 will be returned with errno set to EEXIST.
+// Push a new resource frame onto the stack. If any of the parameters are NULL, -1 will be returned with errno set to EINVAL. Any attempt to add frames beyond the stack's capacity will result in -1 being returned with errno set to EFBIG. Because a catastrophic error will occur if any resource is duplicated, the stack will be scanned to ensure the resource's address is not already tracked. If it is, -1 will be returned with errno set to EEXIST.
 int rm_push(resource_manager *rm, resource_frame *frame) {
   if (!rm || !rm->capacity || !rm->frames || !frame || !frame->res || !frame->res_free) {
     errno = EINVAL;
@@ -35,7 +35,7 @@ int rm_push(resource_manager *rm, resource_frame *frame) {
   return 0;
 }
 
-// Pops and returns the resource and and a pointer to its associated free function from the top of the stack, decrementing its size. If the resource manager is NULL, -1 will be returned with errno set to EINVAL. If the stack is empty, NULL will be returned with errno set to ENOENT.
+// Pops and returns the resource and a pointer to its associated free function from the top of the stack, decrementing its size. If the resource manager is NULL, -1 will be returned with errno set to EINVAL. If the stack is empty, NULL will be returned with errno set to ENOENT.
 int rm_pop(resource_manager *rm, void **res, release_res *res_free) {
   if (!rm || !rm->frames || !res || !res_free) {
     errno = EINVAL;
@@ -53,9 +53,9 @@ int rm_pop(resource_manager *rm, void **res, release_res *res_free) {
   return 0;
 }
 
-// Replace res with new_res, preserving the containing resource frame. NULL will be returned with errno set to EINVAL if any of the parameters are NULL. If the resource can't be found then NULL will be returned with errno set to ENOENT. It is the caller's responsibility to guarantee that res and new_res are of the same type, i.e. make use of the same deallocator. It is likewise the caller's responsibility to properly deallocate the returned resource.
-void *rm_replace(resource_manager *rm, void *res, void *new_res) {
-  if (!rm || !rm->frames || !res || !new_res) {
+// Replaces one resource with a new one, preserving the containing resource frame. If any of the parameters are NULL, NULL will be returned with errno set to EINVAL. Likewise, NULL will be returned with errno set to EINVAL if the old and new resources are the one in the same (i.e. same address). It is the caller's responsibility to guarantee that res and new_res are of the same type, i.e. make use of the same deallocator. It is likewise the caller's responsibility to properly deallocate the returned resource.
+void *rm_replace(resource_manager *rm, void *restrict res, void *restrict new_res) {
+  if (!rm || !rm->frames || !res || !new_res || res == new_res) {
     errno = EINVAL;
     return NULL;
   }
@@ -70,7 +70,7 @@ void *rm_replace(resource_manager *rm, void *res, void *new_res) {
   return NULL;
 }
 
-// Remove the caller-specified resource with stack. -1 will be returned with errno set to EINVAL if any of the parameters are NULL. If the resource can't be found then -1 will be returned with errno set to ENOENT. If found, the resource will be free'd and then the remaining resource frames, if any, will be left shifted, and the frame count decremented.
+// Returns the caller-specified resource and a pointer to its associated free function from within the stack, decrementing its size. If any of the parameters are NULL, -1 will be returned with errno set to EINVAL. If the resource can't be found then -1 will be returned with errno set to ENOENT. If found, the resource will be free'd and then the remaining resource frames, if any, will be left shifted, and the frame count decremented.
 int rm_free(resource_manager *rm, void *res) {
   if (!rm || !rm->frames || !res) {
     errno = EINVAL;
@@ -91,7 +91,7 @@ int rm_free(resource_manager *rm, void *res) {
   return -1;
 }
 
-// Traverse the stack of resource frames, passing each tracked resource to its associated deallocation function. The resource manager will then be zeroed out. Note that referring to a managed pointer after it has been released by calling rm_free is undefined behavior.
+// Traverse the stack of resource frames, passing each tracked resource to its associated deallocation function. The resource manager will then be zeroed out. Note that referring to a managed pointer after it has been released by calling rm_free_manager is undefined behavior.
 void rm_free_manager(resource_manager *rm) {
   if (rm) {
     int status = 0;
