@@ -2,17 +2,19 @@
 
 Copyright © 2018, Ramsey Dow. All rights reserved.
 
-Inspired by Alexey Kutepov's talk, [How I Manage Resources in Pure C -- Life Time](https://www.youtube.com/watch?v=ncRv9fCxt_w), I set out to build a C resource manager of my own.
+Inspired by Alexey Kutepov's talk, [How I Manage Resources in Pure C -- Life Time](https://www.youtube.com/watch?v=ncRv9fCxt_w), I set out to build a C resource manager of my own. Unlike Alexey's implementation, which makes liberal use of the heap, my implementation is purely stack based. There will always be user-specified allocations and deallocations. That is, after all, what the resource manager is managing. However, from a framework perspective, there are no allocations or deallocations. Everything is managed on the call stack.
 
 To build:
 
 ```bash
 mkdir -p build && pushd !#:2
 cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=On -GNinja ..
-ninja -v
+ninja
 ```
 
-To analyze:
+If you don't use [Ninja](https://ninja-build.org) (or simply prefer to use `make`), get rid of the `-GNinja` switch and replace `ninja` with `make`.
+
+Assuming you have [PVS-Studio](https://www.viva64.com/en/pvs-studio/) installed, you can perform static analysis thusly:
 
 ```bash
 pvs-studio-analyzer analyze
