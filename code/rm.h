@@ -1,4 +1,5 @@
 // Copyright © 2018, Ramsey Dow. All rights reserved.
+// SPDX short identifier: MIT
 
 #pragma once
 
