@@ -6,14 +6,14 @@
 typedef void (*release_res)(void *res);
 
 typedef struct {
-  void *res; // Resource.
-  release_res res_free; // Resource deallocator.
+    void *res; // Resource.
+    release_res res_free; // Resource deallocator.
 } resource_frame;
 
 typedef struct {
-  resource_frame *frames; // Resource frame stack.
-  size_t capacity; // Maximum stack capacity.
-  size_t count; // Number of frames on the stack.
+    resource_frame *frames; // Resource frame stack.
+    size_t capacity; // Maximum stack capacity.
+    size_t count; // Number of frames on the stack.
 } resource_manager;
 
 int rm_push(resource_manager *rm, resource_frame *new_frame);
